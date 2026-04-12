@@ -7,7 +7,8 @@
 }
 
 html.dark {
-  @apply bg-slate-950 text-slate-100;
+  background: #030712;
+  color: #f1f5f9;
 }
 
 * {
@@ -28,7 +29,7 @@ html, body {
   padding: 0;
   display: flex;
   flex-direction: row;
-  @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950;
+  background: linear-gradient(135deg, #030712 0%, #0f172a 50%, #030712 100%);
 }
 
 body {
