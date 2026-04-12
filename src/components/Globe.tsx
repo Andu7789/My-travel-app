@@ -1,4 +1,6 @@
 import React from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import type { PhotoPin } from '../types';
 
 interface GlobeProps {
@@ -9,8 +11,8 @@ interface GlobeProps {
 }
 
 /**
- * Cesium.js 3D Globe Component
- * Displays interactive 3D Earth with photo pins
+ * Interactive Map Component
+ * Displays world map with photo pins using Leaflet
  */
 export const Globe: React.FC<GlobeProps> = ({
   photos,
@@ -19,141 +21,81 @@ export const Globe: React.FC<GlobeProps> = ({
   onLocationClick,
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const viewerRef = React.useRef<any>(null);
+  const mapRef = React.useRef<L.Map | null>(null);
+  const markersRef = React.useRef<Map<string, L.Marker>>(new Map());
 
   React.useEffect(() => {
-    const initializeCesium = async () => {
-      try {
-        // Dynamically import Cesium
-        const Cesium = await import('cesium');
-        
-        if (containerRef.current && !viewerRef.current) {
-          try {
-            const viewer = new Cesium.Viewer(containerRef.current, {
-              baseLayerPicker: false,
-              homeButton: true,
-              geocoder: false,
-              timeline: false,
-              animation: false,
-              infoBox: false,
-              selectionIndicator: false,
-              shadows: false,
-              sceneModePicker: false,
-              navigationHelpButton: false,
-              fullscreenButton: false,
-            });
+    if (containerRef.current && !mapRef.current) {
+      // Initialize map
+      const map = L.map(containerRef.current).setView([20, 0], 3);
 
-            // Use simple OSM imagery
-            viewer.imageryLayers.removeAll();
-            viewer.imageryLayers.addImageryProvider(
-              new Cesium.UrlImageryProvider({
-                url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                credit: new Cesium.Credit('OpenStreetMap contributors'),
-              })
-            );
+      // Add OSM tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19,
+      }).addTo(map);
 
-            viewer.scene.globe.enableLighting = false;
-            
-            // Fly to default location (world view)
-            viewer.camera.flyTo({
-              destination: Cesium.Cartesian3.fromDegrees(0, 20, 15000000),
-              duration: 2,
-            });
-
-            // Add photo pins
-            if (photos && photos.length > 0) {
-              photos.forEach((pin) => {
-                const entity = viewer.entities.add({
-                  position: Cesium.Cartesian3.fromDegrees(
-                    pin.longitude,
-                    pin.latitude,
-                    100000
-                  ),
-                  point: {
-                    pixelSize: 12,
-                    color: Cesium.Color.fromCssColorString('#a855f7'),
-                    outlineColor: Cesium.Color.WHITE,
-                    outlineWidth: 2,
-                  },
-                  properties: {
-                    photosCount: pin.photos.length,
-                  },
-                });
-
-                entity.id = pin;
-              });
+      // Add photo pins
+      if (photos && photos.length > 0) {
+        photos.forEach((pin) => {
+          const marker = L.circleMarker(
+            [pin.latitude, pin.longitude],
+            {
+              radius: 8,
+              fillColor: '#a855f7',
+              color: '#fff',
+              weight: 2,
+              opacity: 1,
+              fillOpacity: 0.8,
             }
+          ).addTo(map);
 
-            // Add click handler for pins
-            const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-            handler.setInputAction((click) => {
-              const pickedObject = viewer.scene.pick(click.position);
-              if (Cesium.defined(pickedObject) && pickedObject.id && onPinClick) {
-                onPinClick(pickedObject.id);
-              }
-            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+          marker.on('click', () => {
+            if (onPinClick) {
+              onPinClick(pin);
+            }
+            map.setView([pin.latitude, pin.longitude], 8);
+          });
 
-            viewerRef.current = viewer;
-          } catch (viewerError) {
-            console.error('Cesium viewer error:', viewerError);
-            throw viewerError;
-          }
-        }
-      } catch (error) {
-        console.error('Failed to initialize Cesium:', error);
-        if (containerRef.current) {
-          containerRef.current.innerHTML = `
-            <div class="flex items-center justify-center h-full bg-gradient-to-b from-slate-700 to-slate-900">
-              <div class="text-center text-white p-6">
-                <p class="text-lg font-bold mb-3">🌍 3D Globe Loading...</p>
-                <p class="text-sm text-slate-300">Using OpenStreetMap (free layer, no token needed)</p>
-                <p class="text-xs text-slate-400 mt-4">Please wait...</p>
-              </div>
-            </div>
-          `;
-        }
+          marker.bindPopup(
+            `<div class="text-sm"><strong>📍 ${pin.photos.length} photo${pin.photos.length !== 1 ? 's' : ''}</strong></div>`,
+            { className: 'leaflet-popup-dark' }
+          );
+
+          markersRef.current.set(pin.latitude + ',' + pin.longitude, marker);
+        });
       }
-    };
 
-    initializeCesium();
+      mapRef.current = map;
+    }
 
     return () => {
-      if (viewerRef.current) {
-        try {
-          viewerRef.current.destroy();
-        } catch (e) {
-          console.warn('Error destroying viewer:', e);
-        }
-        viewerRef.current = null;
-      }
+      // Cleanup on unmount
     };
   }, [photos, onPinClick]);
 
-  // Handle pin selection
+  // Handle selected pin
   React.useEffect(() => {
-    if (viewerRef.current && selectedPin) {
-      const entity = viewerRef.current.entities.values.find(
-        (e: any) => e.id === selectedPin
-      );
-      if (entity) {
-        viewerRef.current.camera.flyTo({
-          destination: entity.position,
-          duration: 1,
-        });
-      }
+    if (selectedPin && mapRef.current) {
+      mapRef.current.setView([selectedPin.latitude, selectedPin.longitude], 10);
     }
   }, [selectedPin]);
 
   return (
     <div
       ref={containerRef}
-      className="w-full h-full relative bg-gradient-to-b from-slate-900 to-black"
+      className="w-full h-full bg-gradient-to-b from-slate-700 to-slate-900"
     >
-      <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm pointer-events-none">
-        <div className="text-center">
-          <p className="animate-pulse">🌍 Initializing 3D Globe...</p>
-        </div>
-      </div>
+      <style>{`
+        .leaflet-popup-dark .leaflet-popup-content-wrapper {
+          background-color: #1e293b;
+          color: #e2e8f0;
+          border-radius: 8px;
+        }
+        .leaflet-popup-dark .leaflet-popup-tip {
+          background-color: #1e293b;
+        }
+      `}</style>
     </div>
   );
 };
