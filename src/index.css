@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Cesium UI Styles */
+@import url('https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css');
+
 :root {
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
