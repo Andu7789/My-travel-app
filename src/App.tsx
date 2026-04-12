@@ -280,7 +280,7 @@ function App() {
     ) || [];
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-900">
       {/* Sidebar */}
       <Sidebar
         trips={state.trips}
@@ -295,19 +295,19 @@ function App() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-800 border-b border-slate-700 p-6 flex justify-between items-center backdrop-blur-md">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">
             {state.selectedTrip
-              ? `${state.selectedTrip.name} (${filteredPhotos.length} photos)`
-              : `All Photos (${filteredPhotos.length} total)`}
+              ? `🌍 ${state.selectedTrip.name} · ${filteredPhotos.length} photos`
+              : `📸 All Photos · ${filteredPhotos.length} total`}
           </h2>
-          {state.isLoading && <span className="text-sm text-gray-500">Loading...</span>}
+          {state.isLoading && <span className="text-sm text-purple-400 font-semibold animate-pulse">Loading...</span>}
         </div>
 
         {/* Globe and Upload Container */}
         <div className="flex-1 flex gap-4 p-4 overflow-hidden">
           {/* Globe */}
-          <div className="flex-1 rounded-lg overflow-hidden shadow-lg">
+          <div className="flex-1 rounded-xl overflow-hidden shadow-2xl ring-1 ring-slate-700">
             <div className="relative w-full h-full">
               <Globe
                 photos={photoPins}
@@ -332,18 +332,17 @@ function App() {
           </div>
 
           {/* Sidebar Panel - Upload & Info */}
-          <div className="w-80 flex flex-col gap-4 overflow-y-auto">
+          <div className="w-96 flex flex-col gap-4 overflow-y-auto">
             {state.selectedTrip && (
-              <div className="bg-white rounded-lg shadow p-4">
-                <h3 className="font-semibold text-gray-800 mb-2">
-                  {state.selectedTrip.name}
+              <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl shadow-lg p-5 ring-1 ring-slate-600">
+                <h3 className="font-bold text-lg bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent mb-3">
+                  🏖️ {state.selectedTrip.name}
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {new Date(state.selectedTrip.start_date).toLocaleDateString()} -{' '}
-                  {new Date(state.selectedTrip.end_date).toLocaleDateString()}
+                <p className="text-sm text-slate-300">
+                  📅 {new Date(state.selectedTrip.start_date).toLocaleDateString()} → {new Date(state.selectedTrip.end_date).toLocaleDateString()}
                 </p>
                 {state.selectedTrip.description && (
-                  <p className="text-sm text-gray-700 mt-2">
+                  <p className="text-sm text-slate-400 mt-3 italic">
                     {state.selectedTrip.description}
                   </p>
                 )}
@@ -358,21 +357,20 @@ function App() {
             />
 
             {state.selectedPin && (
-              <div className="bg-white rounded-lg shadow p-4">
-                <h3 className="font-semibold text-gray-800 mb-2">
-                  Location Preview
+              <div className="bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl shadow-lg p-5 ring-1 ring-slate-600">
+                <h3 className="font-bold text-lg text-cyan-300 mb-3">
+                  📍 Location Preview
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {state.selectedPin.photos.length} photo
-                  {state.selectedPin.photos.length !== 1 ? 's' : ''} at this location
+                <p className="text-sm text-slate-300">
+                  {state.selectedPin.photos.length} photo{state.selectedPin.photos.length !== 1 ? 's' : ''} at this location
                 </p>
-                <div className="mt-2 grid grid-cols-3 gap-2">
+                <div className="mt-4 grid grid-cols-3 gap-2">
                   {state.selectedPin.photos.slice(0, 6).map((photo) => (
                     <img
                       key={photo.id}
                       src={photo.thumbnail_url || photo.url}
                       alt="thumbnail"
-                      className="w-full aspect-square object-cover rounded cursor-pointer hover:opacity-75"
+                      className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:opacity-75 transition-opacity ring-1 ring-slate-600"
                       onClick={() => {
                         setState((prev) => ({ ...prev, selectedPhoto: photo }));
                         setGalleryOpen(true);

@@ -20,11 +20,11 @@ export const MapControls: React.FC<MapControlsProps> = ({
   onBasemapChange,
 }) => {
   return (
-    <div className="absolute top-4 right-4 z-40 flex flex-col gap-2 bg-white rounded-lg shadow-lg p-2">
+    <div className="absolute top-4 right-4 z-40 flex flex-col gap-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl p-3 ring-1 ring-slate-700 backdrop-blur-md">
       <button
         onClick={onResetView}
         title="Reset view to home"
-        className="p-2 hover:bg-gray-100 rounded transition"
+        className="p-3 hover:bg-purple-500 hover:bg-opacity-30 rounded-lg transition-all duration-200 hover:scale-110 text-slate-300 hover:text-purple-300"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -36,13 +36,15 @@ export const MapControls: React.FC<MapControlsProps> = ({
         </svg>
       </button>
 
-      <div className="border-t border-gray-200" />
+      <div className="border-t border-slate-700" />
 
       <button
         onClick={on3DToggle}
         title={is3D ? 'Switch to 2D' : 'Switch to 3D'}
-        className={`p-2 rounded transition ${
-          is3D ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
+        className={`p-3 rounded-lg transition-all duration-200 hover:scale-110 ${
+          is3D 
+            ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg shadow-purple-600/50' 
+            : 'text-slate-300 hover:bg-slate-700'
         }`}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,20 +57,20 @@ export const MapControls: React.FC<MapControlsProps> = ({
         </svg>
       </button>
 
-      <div className="border-t border-gray-200" />
+      <div className="border-t border-slate-700" />
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs font-semibold text-gray-600 px-2">Basemap</label>
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-bold text-slate-300 px-1 uppercase tracking-wide">🗺️ Map</label>
         <select
           value={basemap}
           onChange={(e) =>
             onBasemapChange(e.target.value as 'satellite' | 'street' | 'topographic')
           }
-          className="px-2 py-1 text-xs border border-gray-300 rounded hover:border-gray-400"
+          className="px-3 py-2 text-xs font-medium border border-slate-600 rounded-lg bg-slate-700 text-slate-100 hover:border-purple-500 hover:bg-slate-600 transition-all duration-200"
         >
-          <option value="satellite">Satellite</option>
-          <option value="street">Street</option>
-          <option value="topographic">Topographic</option>
+          <option value="satellite">🛰️ Satellite</option>
+          <option value="street">🏙️ Street</option>
+          <option value="topographic">⛰️ Topographic</option>
         </select>
       </div>
     </div>

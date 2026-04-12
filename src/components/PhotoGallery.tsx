@@ -50,12 +50,12 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const photo = photos[currentIndex];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-gradient-to-br from-black via-slate-900 to-black z-50 flex items-center justify-center backdrop-blur-sm">
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-50 p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition"
+        className="absolute top-6 right-6 z-50 p-3 hover:bg-white hover:bg-opacity-20 rounded-full transition-all duration-200 hover:scale-110"
       >
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
@@ -63,30 +63,31 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       <div className="flex flex-col items-center w-full h-full">
         {/* Main Image */}
         <div className="flex-1 flex items-center justify-center p-8">
-          <img
-            src={photo.url}
-            alt={photo.filename}
-            className="max-w-full max-h-full object-contain"
-          />
+          <div className="relative">
+            <img
+              src={photo.url}
+              alt={photo.filename}
+              className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+            />
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-tr from-purple-500/10 to-cyan-500/10 pointer-events-none"></div>
+          </div>
         </div>
 
         {/* Metadata */}
-        <div className="w-full bg-black bg-opacity-80 text-white p-4">
-          <h3 className="text-lg font-semibold mb-2">{photo.filename}</h3>
-          <div className="grid grid-cols-2 gap-2 text-sm text-gray-300">
-            <div>Date: {new Date(photo.date_taken).toLocaleDateString()}</div>
-            <div>
-              Coords: {photo.latitude.toFixed(4)}°, {photo.longitude.toFixed(4)}°
-            </div>
-            {photo.camera_info && <div>Camera: {photo.camera_info}</div>}
+        <div className="w-full bg-gradient-to-r from-slate-800 to-slate-900 backdrop-blur-md text-white p-6 border-y border-slate-700">
+          <h3 className="text-lg font-bold mb-3 text-cyan-300">{photo.filename}</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="text-slate-300">📅 <span className="text-slate-100">{new Date(photo.date_taken).toLocaleDateString()}</span></div>
+            <div className="text-slate-300">📍 <span className="text-slate-100">{photo.latitude.toFixed(4)}°, {photo.longitude.toFixed(4)}°</span></div>
+            {photo.camera_info && <div className="col-span-2 text-slate-300">📷 <span className="text-slate-100">{photo.camera_info}</span></div>}
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="w-full bg-black bg-opacity-80 text-white px-4 py-4 flex items-center justify-between">
+        <div className="w-full bg-gradient-to-r from-slate-800 to-slate-900 backdrop-blur-md text-white px-6 py-4 flex items-center justify-between border-t border-slate-700">
           <button
             onClick={onPrevious}
-            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition disabled:opacity-50"
+            className="p-3 hover:bg-purple-500 hover:bg-opacity-40 rounded-full transition-all duration-200 hover:scale-110 disabled:opacity-30"
             disabled={currentIndex === 0}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,36 +95,36 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
             </svg>
           </button>
 
-          <div className="flex-1 flex items-center justify-center space-x-2">
+          <div className="flex-1 flex items-center justify-center space-x-3">
             {/* Thumbnail Strip */}
-            <div className="flex gap-2 overflow-x-auto max-w-md">
+            <div className="flex gap-3 overflow-x-auto max-w-md">
               {photos.map((p, idx) => (
                 <button
                   key={p.id}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`flex-shrink-0 w-12 h-12 rounded border-2 transition ${
+                  className={`flex-shrink-0 w-14 h-14 rounded-lg border-2 transition-all duration-200 hover:scale-110 ${
                     idx === currentIndex
-                      ? 'border-blue-500'
-                      : 'border-gray-600 hover:border-gray-400'
+                      ? 'border-cyan-400 shadow-lg shadow-cyan-400/50'
+                      : 'border-slate-600 hover:border-slate-400'
                   }`}
                 >
                   <img
                     src={p.thumbnail_url || p.url}
                     alt="thumbnail"
-                    className="w-full h-full object-cover rounded"
+                    className="w-full h-full object-cover rounded-md"
                   />
                 </button>
               ))}
             </div>
 
-            <span className="text-sm text-gray-400 flex-shrink-0">
+            <span className="text-sm text-cyan-300 font-semibold flex-shrink-0 bg-slate-700 px-3 py-1 rounded-full">
               {currentIndex + 1} / {photos.length}
             </span>
           </div>
 
           <button
             onClick={onNext}
-            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition disabled:opacity-50"
+            className="p-3 hover:bg-purple-500 hover:bg-opacity-40 rounded-full transition-all duration-200 hover:scale-110 disabled:opacity-30"
             disabled={currentIndex === photos.length - 1}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -57,15 +57,15 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
   );
 
   return (
-    <div className="p-4 bg-gray-50 rounded-lg">
+    <div className="p-5 bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl ring-1 ring-slate-600">
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition ${
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
           isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-gray-400'
+            ? 'border-purple-500 bg-purple-500/20'
+            : 'border-slate-600 hover:border-purple-500 hover:bg-slate-700'
         } ${!selectedTripId && 'opacity-50 cursor-not-allowed'}`}
       >
         <input
@@ -84,7 +84,7 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
           className="w-full"
         >
           <svg
-            className="mx-auto h-12 w-12 text-gray-400 mb-2"
+            className="mx-auto h-12 w-12 text-purple-400 mb-3"
             stroke="currentColor"
             fill="none"
             viewBox="0 0 48 48"
@@ -98,34 +98,34 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
             <circle cx="32" cy="20" r="4" stroke="currentColor" strokeWidth={2} />
           </svg>
 
-          <p className="text-sm font-medium text-gray-700">
-            {selectedTripId ? 'Drag photos here or click to select' : 'Select a trip first'}
+          <p className="text-sm font-semibold text-slate-100">
+            {selectedTripId ? '📸 Drag photos or click to upload' : '👆 Select a trip first'}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
-            PNG, JPG, GIF, HEIC up to 50MB each
+          <p className="text-xs text-slate-400 mt-2">
+            PNG, JPG, GIF, HEIC up to 50MB each • EXIF location detected
           </p>
         </button>
       </div>
 
       {uploadProgress.length > 0 && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-3">
           {uploadProgress.map((progress) => (
-            <div key={progress.filename} className="space-y-1">
-              <p className="text-sm font-medium text-gray-700">
+            <div key={progress.filename} className="space-y-2">
+              <p className="text-sm font-medium text-slate-200 truncate">
                 {progress.filename}
               </p>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
                 <div
-                  className={`h-2 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all duration-300 ${
                     progress.status === 'error'
                       ? 'bg-red-500'
-                      : 'bg-blue-500'
+                      : 'bg-gradient-to-r from-purple-500 to-cyan-500'
                   }`}
                   style={{ width: `${progress.progress}%` }}
                 />
               </div>
               {progress.error && (
-                <p className="text-xs text-red-500">{progress.error}</p>
+                <p className="text-xs text-red-400 font-semibold">{progress.error}</p>
               )}
             </div>
           ))}
